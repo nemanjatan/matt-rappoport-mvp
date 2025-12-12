@@ -190,6 +190,21 @@ With debug mode enabled, you can trace why a field was or wasn't extracted:
 
 See `src/utils/README.md` for detailed debugging documentation.
 
+## Deployment
+
+### Railway Deployment
+
+This project is configured for deployment on Railway. See [RAILWAY_DEPLOYMENT.md](RAILWAY_DEPLOYMENT.md) for detailed deployment instructions.
+
+**Quick Start:**
+1. Create a Railway project
+2. Set environment variables:
+   - `OPENAI_API_KEY` (required)
+   - `GOOGLE_APPLICATION_CREDENTIALS` (required - Railway will handle this)
+3. Deploy from GitHub or via Railway CLI
+
+For more details, see [RAILWAY_DEPLOYMENT.md](RAILWAY_DEPLOYMENT.md).
+
 ## License
 
 This is a proof-of-concept project for demonstration purposes.

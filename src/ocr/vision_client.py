@@ -66,16 +66,55 @@ class VisionOCRClient:
         Args:
             credentials_path: Path to Google Cloud service account JSON file.
                             If None, uses GOOGLE_APPLICATION_CREDENTIALS env var.
-                            For Railway: Set GOOGLE_APPLICATION_CREDENTIALS as env var
-                            pointing to file path, or Railway will handle it automatically.
+                            For Railway: GOOGLE_APPLICATION_CREDENTIALS may contain JSON content
+                            (as a string) or a file path.
         """
-        # Set credentials path if provided
-        # Railway will typically set GOOGLE_APPLICATION_CREDENTIALS as an env var
-        # pointing to the credentials file path
+        # Handle credentials for Railway deployment
+        # Railway may provide GOOGLE_APPLICATION_CREDENTIALS as JSON content (string) or file path
+        creds_env = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+        
         if credentials_path:
-            os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_path
-        # If no credentials_path provided, GOOGLE_APPLICATION_CREDENTIALS env var will be used
-        # This works for both local development and Railway deployment
+            # If credentials_path is provided, check if it's JSON content or a file path
+            if credentials_path.strip().startswith('{'):
+                # It's JSON content - write to temp file
+                try:
+                    # Validate JSON
+                    json.loads(credentials_path)
+                    # Create temp file
+                    with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+                        f.write(credentials_path)
+                        temp_path = f.name
+                    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = temp_path
+                except (json.JSONDecodeError, Exception):
+                    # Not valid JSON or error writing, treat as file path
+                    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_path
+            elif Path(credentials_path).exists():
+                # It's a valid file path
+                os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_path
+            else:
+                # Treat as file path (may not exist yet)
+                os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credentials_path
+        elif creds_env:
+            # No credentials_path provided, but GOOGLE_APPLICATION_CREDENTIALS env var is set
+            # Check if it's JSON content or a file path
+            if creds_env.strip().startswith('{'):
+                # It's JSON content - write to temp file
+                try:
+                    # Validate JSON
+                    json.loads(creds_env)
+                    # Create temp file
+                    with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+                        f.write(creds_env)
+                        temp_path = f.name
+                    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = temp_path
+                except (json.JSONDecodeError, Exception):
+                    # Not valid JSON or error writing, treat as file path
+                    # Keep the original value
+                    pass
+            # If it's a file path, it's already set correctly
+        
+        # If no credentials are provided at all, let Google Cloud SDK use default credentials
+        # (this will fail if not configured, but that's expected)
         
         self.client = vision.ImageAnnotatorClient()
     

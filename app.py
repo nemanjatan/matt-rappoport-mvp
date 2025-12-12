@@ -79,13 +79,17 @@ with col2:
     if extract_button:
         try:
             # Initialize pipeline (always use OpenAI, force enabled)
-            # For Railway: credentials_path can be None if GOOGLE_APPLICATION_CREDENTIALS is set
+            # For Railway: GOOGLE_APPLICATION_CREDENTIALS may be JSON content or file path
+            # VisionOCRClient will handle both cases automatically
             creds_path = None
             if credentials_path and Path(credentials_path).exists():
+                # Use local file if it exists
                 creds_path = credentials_path
             elif os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
-                # Railway may set this as an env var pointing to a file or as JSON content
+                # Railway sets this - may be JSON content or file path
+                # VisionOCRClient will handle it
                 creds_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+            # If creds_path is None, VisionOCRClient will check GOOGLE_APPLICATION_CREDENTIALS env var
             
             pipeline = ExtractionPipeline(
                 credentials_path=creds_path,
