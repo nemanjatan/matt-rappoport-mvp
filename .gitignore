@@ -201,7 +201,67 @@ cython_debug/
 .cursorignore
 .cursorindexingignore
 
+# Railway
+.railway/
+
+# Credentials (should never be committed)
+*.json
+!package.json
+!package-lock.json
+matt-*.json
+
+# Output files (keep directory structure but ignore generated files)
+output/*.xlsx
+output/*.json
+output/*.txt
+output/*.csv
+!output/.gitkeep
+
 # Marimo
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Streamlit
+.streamlit/
+*.streamlit/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Test outputs and temporary files
+test_*.json
+*_test_output.json
+*.tmp
+*.temp
+
+# Log files (additional patterns)
+logs/
+*.log.*
+
+# Streamlit cache and session files
+.streamlit/
+*.streamlit/
+
+# macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Test outputs and temporary files
+test_*.json
+*_test_output.json
+*.tmp
+*.temp
+
+# Log files (additional patterns - *.log already covered above)
+logs/
+*.log.*
+
+# Temporary extraction files (if saved outside output/)
+raw_ocr_*.json
+extraction_result_*.json
+pipeline_result_*.json
+ocr_test_summary.json
